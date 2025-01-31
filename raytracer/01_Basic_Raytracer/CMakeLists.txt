@@ -6,5 +6,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 add_executable(01_Basic_Raytracer main.cpp)
 
-# Enlazar GLFW
-target_link_libraries(01_Basic_Raytracer PRIVATE glfw)
+target_link_libraries(01_Basic_Raytracer PRIVATE SDL2::SDL2 SDL2::SDL2main)

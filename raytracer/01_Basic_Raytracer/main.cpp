@@ -1,37 +1,36 @@
-#include <GLFW/glfw3.h>
+#include <SDL2/SDL.h>
 #include <iostream>
 
 const int WINDOW_WIDTH = 800;
 const int WINDOW_HEIGHT = 600;
 
-void window_close_callback(GLFWwindow* window) {
-    std::cout << "Closing window..." << std::endl;
-}
-
 int main() {
-    if (!glfwInit()) {
-        std::cerr << "Error: Failed to initialize GLFW" << std::endl;
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
+        std::cerr << "Error: Failed to initialize SDL video - " << SDL_GetError() << std::endl;
         return -1;
     }
 
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-
-    GLFWwindow* window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "Window", nullptr, nullptr);
+    SDL_Window* window = SDL_CreateWindow("SDL Window",
+                                          SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+                                          WINDOW_WIDTH, WINDOW_HEIGHT, 0);
     if (!window) {
-        std::cerr << "Error: Failed to create window" << std::endl;
-        glfwTerminate();
+        std::cerr << "Error: Failed to create window - " << SDL_GetError() << std::endl;
+        SDL_Quit();
         return -1;
     }
 
-    glfwSetWindowCloseCallback(window, window_close_callback);
-
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
+    bool running = true;
+    SDL_Event event;
+    while (running) {
+        while (SDL_PollEvent(&event)) {
+            if (event.type == SDL_QUIT) {
+                running = false;
+            }
+        }
     }
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+    SDL_DestroyWindow(window);
+    SDL_Quit();
 
-    std::cout << "Application terminated." << std::endl;
     return 0;
 }
