@@ -1,0 +1,40 @@
+# Build and temporary CMake files
+/build/
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+Makefile
+/.cache/
+# Binary and executable files
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+# Intermediate compilation files
+*.o
+*.obj
+*.a
+*.lib
+*.pdb
+*.pch
+
+# Debugging and log files
+*.log
+*.swp
+*.swo
+
+# IDE and editor configurations
+.vscode/
+.idea/
+*.iml
+compile_commands.json
+
+# OS-specific files (macOS, Windows)
+.DS_Store
+Thumbs.db
+
+# Git submodule files (prevent tracking the glfw submodule's .git folder)
+/vendor/glfw/.git
