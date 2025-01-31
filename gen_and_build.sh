@@ -23,7 +23,7 @@ cd build || exit 1
 
 # Run CMake with the selected generator
 echo "Generating project with generator: $GENERATOR"
-cmake -G "$GENERATOR" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+cmake -G "$GENERATOR" -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 
 # Move compile_commands.json to the root directory
 if [ -f "compile_commands.json" ]; then
