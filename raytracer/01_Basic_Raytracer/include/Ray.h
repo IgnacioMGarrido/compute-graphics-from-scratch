@@ -13,7 +13,7 @@ public:
 
 	Vector<T, N> From() const { return m_from; };
 	Vector<T, N> To() const { return m_to; };
-	Vector<T, N> Diff() const { return m_from - m_to; };
+	Vector<T, N> Diff() const { return m_to - m_from; };
 	Vector<T, N> Dir() const { return Diff().normalize(); };
 private:
 	Vector<T, N> m_from;

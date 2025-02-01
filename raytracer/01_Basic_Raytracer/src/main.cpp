@@ -4,6 +4,7 @@
 #include <sstream>
 #include "Scene.h"
 #include "Image.h"
+#include "Camera.h"
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
@@ -43,7 +44,15 @@ int main() {
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    rt::Camera camera({0.0, 0.0, 0.0}, {0.0, 2.0, 0.0}, {0.0, 0.0, 1.0}, 90, 16.0 / 9.0);
 
+    auto screenCenter = camera.getScreenCenter();
+    auto cameraScreenU = camera.getU();
+    auto cameraScreenV = camera.getV();
+
+    std::cout << "Camera Screen Center: " << screenCenter << std::endl;
+    std::cout << "Camera Screen U: " << cameraScreenU << std::endl;
+    std::cout << "Camera Screen V: " << cameraScreenV << std::endl;
     rt::Scene rtScene;
     rt::Image rtImage;
     rtImage.Initialize(WINDOW_WIDTH, WINDOW_HEIGHT, renderer);

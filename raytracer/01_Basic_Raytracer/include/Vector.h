@@ -7,18 +7,17 @@ namespace {
 // Thanks John Carmak :P
 template<typename T>
 T fast_inverse_sqrt(T number) {
-	long i;
-	T x2, y;
-	const T threehalfs = 1.5f;
+	if (number <= 0) return std::numeric_limits<T>::infinity();
 
-	x2 = number * 0.5f;
-	y  = number;
-	i  = *(long*)&y;
-	i  = 0x5f3759df - (i >> 1);
-	y  = *(T*)&i;
-	y  = y * (threehalfs - (x2 * y * y));
+	using IntType = typename std::conditional<std::is_same<T, float>::value, uint32_t, uint64_t>::type;
+	T x2 = number * 0.5f;
+	T y  = number;
+	IntType i = *(IntType*)&y;
+	i = (std::is_same<T, float>::value ? 0x5F3759DF : 0x5FE6EB50C7B537A9) - (i >> 1);
+	y = *(T*)&i;
+	y = y * (1.5f - (x2 * y * y));
 
-	return 1 / y;
+	return y;
 }
 
 } // namespace
@@ -64,6 +63,20 @@ public:
 		return result;
 	}
 
+	Vector operator*(T scalar) const {
+		Vector result;
+		for (std::size_t i = 0; i < N; ++i)
+		    result[i] = components[i] * scalar;
+		return result;
+	}
+
+	Vector operator/(T scalar) const {
+		Vector result;
+		for (std::size_t i = 0; i < N; ++i)
+		    result[i] = components[i] / scalar;
+		return result;
+	}
+
 	T dot(const Vector& other) const {
 		T result = 0;
 		for (std::size_t i = 0; i < N; ++i)
@@ -71,8 +84,24 @@ public:
 		return result;
 	}
 
+	template <typename U = T>
+	Vector cross(const Vector<U, N>& other) const {
+		static_assert(N == 3, "Cross product is only defined for 3D vectors");
+
+		return Vector({
+		    components[1] * other.components[2] - components[2] * other.components[1],
+		    components[2] * other.components[0] - components[0] * other.components[2],
+		    components[0] * other.components[1] - components[1] * other.components[0]
+		});
+	}
+
 	T magnitude() const {
-		return 1 / fast_inverse_sqrt<T>(dot(*this));
+		T dotProduct = dot(*this);
+		if (dotProduct == 0)
+			return 0;
+		//We loose some FPSs using the default sqrt implementation but we'll see how bad it is or if we can live with that.
+		return std::sqrt(dotProduct);
+		/*return 1 / fast_inverse_sqrt<T>(dotProduct);*/
 	}
 
 	Vector normalize() const {
