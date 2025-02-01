@@ -11,9 +11,12 @@ public:
 	void SetPixel(int i_x, int i_y, double red, double green, double blue);
 
 	void Display();
+
+	inline uint32_t GetWidth() const { return m_width; }
+	inline uint32_t GetHeight() const { return m_height; }
 private:
 
-	Uint32 ConvertColor(double red, double blue, double green);
+	Uint32 ConvertColor(double red, double green, double blue);
 	void InitTexture();
 
 private:
@@ -21,6 +24,7 @@ private:
 	std::vector<std::vector<double>> m_gChannel;
 	std::vector<std::vector<double>> m_bChannel;
 
+	std::vector<Uint32> mPixelBuffer;
 	uint32_t m_width = 0;
 	uint32_t m_height = 0;
 

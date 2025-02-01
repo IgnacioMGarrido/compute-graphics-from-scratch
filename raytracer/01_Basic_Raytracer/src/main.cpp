@@ -1,11 +1,30 @@
-#include "SDL_render.h"
 #include <SDL2/SDL.h>
+#include <SDL2/SDL_test_font.h>
 #include <iostream>
+#include <sstream>
+#include "Scene.h"
 #include "Image.h"
 
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
+
+// Variables para FPS
+Uint32 lastTime = 0, currentTime;
+int frames = 0;
+float fps = 0.0f;
+
+namespace {
+    void CalculateFPS() {
+        frames++;
+        currentTime = SDL_GetTicks();
+        if (currentTime > lastTime + 1000) {
+            fps = frames * 1000.0f / (currentTime - lastTime);
+            lastTime = currentTime;
+            frames = 0;
+        }
+    }
+}
 
 int main() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS) != 0) {
@@ -25,17 +44,9 @@ int main() {
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
+    rt::Scene rtScene;
     rt::Image rtImage;
     rtImage.Initialize(WINDOW_WIDTH, WINDOW_HEIGHT, renderer);
-
-    for (int x = 0; x < WINDOW_WIDTH; x++) {
-        for (int y = 0; y < WINDOW_HEIGHT; y++) {
-            double red = (static_cast<double>(x) / WINDOW_WIDTH) * 255.0;
-            double green = (static_cast<double>(y) / WINDOW_HEIGHT) * 255.0;
-            rtImage.SetPixel(x, y, red, green, 0);
-        }
-    }
-
 
     bool running = true;
     SDL_Event event;
@@ -44,15 +55,21 @@ int main() {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
-
-            //Render
-            SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-            SDL_RenderClear(renderer);
-
-            rtImage.Display();
-
-            SDL_RenderPresent(renderer);
         }
+        CalculateFPS();
+        //Render
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+
+        // Render Image
+        rtScene.Render(rtImage);
+
+        // Render FPSs
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        std::ostringstream fpsText;
+        fpsText << "FPS: " << static_cast<int>(fps);
+        SDLTest_DrawString(renderer, 10, 10, fpsText.str().c_str());
+        SDL_RenderPresent(renderer);
     }
 
     SDL_DestroyWindow(window);

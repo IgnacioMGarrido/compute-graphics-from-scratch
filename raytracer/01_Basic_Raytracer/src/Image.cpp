@@ -1,7 +1,6 @@
 #include "Image.h"
 #include "SDL_render.h"
 #include "SDL_surface.h"
-#include <cstring>
 #include <vector>
 
 namespace rt {
@@ -20,6 +19,7 @@ void Image::Initialize(uint32_t i_width, uint32_t i_height, SDL_Renderer* i_rend
 
     m_renderer = i_renderer;
 
+    mPixelBuffer = std::vector<Uint32>(m_width * m_height, 0);
     InitTexture();
 }
 
@@ -30,31 +30,22 @@ void Image::SetPixel(int i_x, int i_y, double red, double green, double blue) {
 }
 
 void Image::Display() {
-    Uint32* pixels = new Uint32[m_width * m_height];
+    Uint32* pixels = mPixelBuffer.data(); 
 
-    memset(pixels, 0, m_width * m_height* sizeof(Uint32));
-
-    for( int x = 0; x < m_width; x++) {
-        for( int y = 0; y < m_height; y++) {
-            pixels[(m_width * y) + x] = ConvertColor(m_rChannel.at(x).at(y), m_gChannel.at(x).at(y), m_bChannel.at(x).at(y));
+    for (int y = 0; y < m_height; y++) {
+        Uint32* row = &pixels[y * m_width];
+        for (int x = 0; x < m_width; x++) {
+            row[x] = ConvertColor(m_rChannel[x][y], m_gChannel[x][y], m_bChannel[x][y]);
         }
     }
 
     SDL_UpdateTexture(m_texture, nullptr, pixels, m_width * sizeof(Uint32));
 
-    delete[] pixels;
-
-    SDL_Rect srcRect {
-        .x = 0,
-        .y = 0,
-        .w = static_cast<int>(m_width),
-        .h = static_cast<int>(m_height),
-    };
-    SDL_Rect bounds = srcRect;
-    SDL_RenderCopy(m_renderer, m_texture, &srcRect, &bounds);
+    SDL_Rect bounds = {0, 0, static_cast<int>(m_width), static_cast<int>(m_height)};
+    SDL_RenderCopy(m_renderer, m_texture, nullptr, &bounds);
 }
 
-Uint32 Image::ConvertColor(double red, double blue, double green) {
+Uint32 Image::ConvertColor(double red, double green, double blue) {
 
     uint8_t r = static_cast<uint8_t>(red);
     uint8_t g = static_cast<uint8_t>(green);

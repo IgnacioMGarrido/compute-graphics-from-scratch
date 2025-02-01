@@ -9,4 +9,4 @@ file(GLOB_RECURSE SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/src/*.cpp" "${CMAKE_CUR
 add_executable(01_Basic_Raytracer ${SRC_FILES})
 target_include_directories(01_Basic_Raytracer PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-target_link_libraries(01_Basic_Raytracer PRIVATE SDL2::SDL2 SDL2::SDL2main)
+target_link_libraries(01_Basic_Raytracer PRIVATE SDL2::SDL2 SDL2::SDL2main SDL2_test)
