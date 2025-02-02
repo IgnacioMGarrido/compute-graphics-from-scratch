@@ -21,9 +21,8 @@ public:
 
 	void Move(const math::vec3d i_dir, double i_distance);
 	void Rotate(double i_yaw, double i_pitch);
-
 private:
-	void UpdateCamera(math::vec3d i_lookAt, math::vec3d i_vUp);
+	void UpdateCamera();
 private:
 	math::vec3d m_origin;
 	math::vec3d m_lookAt;

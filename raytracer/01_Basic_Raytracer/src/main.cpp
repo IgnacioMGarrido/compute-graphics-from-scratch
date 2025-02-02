@@ -9,16 +9,22 @@
 const int WINDOW_WIDTH = 1280;
 const int WINDOW_HEIGHT = 720;
 
-
+double mouseSensitivity = 0.1;
+double yaw = 0, pitch = 0;
 // Variables para FPS
 Uint32 lastTime = 0, currentTime;
 int frames = 0;
 float fps = 0.0f;
+float dt = 0;
 
 namespace {
     void CalculateFPS() {
+        static Uint32 lastFrameTime = SDL_GetTicks();
         frames++;
         currentTime = SDL_GetTicks();
+
+        dt = (currentTime - lastFrameTime) / 1000.0f;
+        lastFrameTime = currentTime; // Actualizar el tiempo del último frame
         if (currentTime > lastTime + 1000) {
             fps = frames * 1000.0f / (currentTime - lastTime);
             lastTime = currentTime;
@@ -44,15 +50,7 @@ int main() {
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-    rt::Camera camera({0.0, 0.0, 0.0}, {0.0, 2.0, 0.0}, {0.0, 0.0, 1.0}, 90, 16.0 / 9.0);
 
-    auto screenCenter = camera.getScreenCenter();
-    auto cameraScreenU = camera.getU();
-    auto cameraScreenV = camera.getV();
-
-    std::cout << "Camera Screen Center: " << screenCenter << std::endl;
-    std::cout << "Camera Screen U: " << cameraScreenU << std::endl;
-    std::cout << "Camera Screen V: " << cameraScreenV << std::endl;
     rt::Scene rtScene;
     rt::Image rtImage;
     rtImage.Initialize(WINDOW_WIDTH, WINDOW_HEIGHT, renderer);
@@ -64,7 +62,25 @@ int main() {
             if (event.type == SDL_QUIT) {
                 running = false;
             }
+            //TODO: This i broken. don't bother with rotations.
+            /*if (event.type == SDL_MOUSEMOTION) {*/
+            /*    double deltaX = event.motion.xrel * mouseSensitivity;*/
+            /*    double deltaY = event.motion.yrel * mouseSensitivity;*/
+            /**/
+            /*    rtScene.GetSceneCamera().Rotate(deltaX, -deltaY);*/
+            /*}*/
         }
+
+        static const float speed = 5.0f;
+        const Uint8* keystate = SDL_GetKeyboardState(NULL);
+        if (keystate[SDL_SCANCODE_Q]) { rtScene.GetSceneCamera().Move({0.0, 0.0, -3.0},speed * dt); }
+        if (keystate[SDL_SCANCODE_E]) { rtScene.GetSceneCamera().Move({0.0, 0.0, 3.0}, speed * dt); }
+        if (keystate[SDL_SCANCODE_A]) { rtScene.GetSceneCamera().Move({-3.0, 0.0, 0.0},speed * dt); }
+        if (keystate[SDL_SCANCODE_D]) { rtScene.GetSceneCamera().Move({3.0, 0.0, 0.0}, speed * dt); }
+        if (keystate[SDL_SCANCODE_W]) { rtScene.GetSceneCamera().Move({0.0, 3.0, 0.0}, speed * dt); }
+        if (keystate[SDL_SCANCODE_S]) { rtScene.GetSceneCamera().Move({0.0, -3.0, 0.0},speed * dt); }
+
+
         CalculateFPS();
         //Render
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
