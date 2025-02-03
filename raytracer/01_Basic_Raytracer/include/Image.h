@@ -8,22 +8,16 @@ public:
 	~Image();
 	void Initialize(uint32_t i_width, uint32_t i_height, SDL_Renderer* i_renderer);
 
-	void SetPixel(int i_x, int i_y, double red, double green, double blue);
+	void SetPixel(int i_x, int i_y, Uint8 red, Uint8 green, Uint8 blue);
 
 	void Display();
 
 	inline uint32_t GetWidth() const { return m_width; }
 	inline uint32_t GetHeight() const { return m_height; }
 private:
-
-	Uint32 ConvertColor(double red, double green, double blue);
 	void InitTexture();
 
 private:
-	std::vector<std::vector<double>> m_rChannel;
-	std::vector<std::vector<double>> m_gChannel;
-	std::vector<std::vector<double>> m_bChannel;
-
 	std::vector<Uint32> mPixelBuffer;
 	uint32_t m_width = 0;
 	uint32_t m_height = 0;

@@ -12,9 +12,9 @@ Scene::Scene()
 {
 
     m_objects = { 
-        std::make_shared<Sphere>(math::vec3d{ 0.0, 5.0, 0.0}, 1.0, math::vec3d{255.0, 0.0, 0.0}),
-        std::make_shared<Sphere>(math::vec3d{ 2.25, 0.0, 0.0}, 1.0, math::vec3d{0.0, 255.0, 0.0}),
-        std::make_shared<Sphere>(math::vec3d{-2.25, 0.0, 0.0}, 1.0, math::vec3d{0.0, 0.0, 255.0}),
+        std::make_shared<Sphere>(math::vec3d{ 0.0, 5.0, 0.0}, 1.0,  math::ColorVec{255, 0, 0}),
+        std::make_shared<Sphere>(math::vec3d{ 2.25, 0.0, 0.0}, 1.0, math::ColorVec{0, 255, 0}),
+        std::make_shared<Sphere>(math::vec3d{-2.25, 0.0, 0.0}, 1.0, math::ColorVec{0, 0, 255}),
     };
 
 }
@@ -31,13 +31,13 @@ void Scene::RenderSection(Image& image, Camera& camera, const std::vector<std::s
 
             double closest = std::numeric_limits<double>::max();
             bool hit = false;
-            math::vec3d closestColor;
+            math::ColorVec closestColor;
             math::vec3d intersectionPoint;
             for (const auto& object : objects) {
                 double t = 1000;
                 math::vec3d tempIntersection;
                 if (object->Intersect(ray, tempIntersection, t)) {
-                    math::vec3d color = object->GetMaterial();
+                    math::ColorVec color = object->GetMaterial();
                     double dist = (tempIntersection - ray.From()).magnitude();
 
                     if (dist < closest) {
@@ -52,7 +52,7 @@ void Scene::RenderSection(Image& image, Camera& camera, const std::vector<std::s
                 double shadingFactor = 0;
                 image.SetPixel(x, y, closestColor.x() - shadingFactor, closestColor.y() - shadingFactor, closestColor.z() - shadingFactor);
             } else {
-                image.SetPixel(x, y, 0.0, 0.0, 0.0);
+                image.SetPixel(x, y, 0, 0, 0);
             }
         }
     }

@@ -13,48 +13,26 @@ void Image::Initialize(uint32_t i_width, uint32_t i_height, SDL_Renderer* i_rend
     m_width = i_width;
     m_height = i_height;
 
-    m_rChannel.resize(m_width, std::vector<double>(m_height, 0.0));
-    m_gChannel.resize(m_width, std::vector<double>(m_height, 0.0));
-    m_bChannel.resize(m_width, std::vector<double>(m_height, 0.0));
-
     m_renderer = i_renderer;
 
     mPixelBuffer = std::vector<Uint32>(m_width * m_height, 0);
     InitTexture();
 }
 
-void Image::SetPixel(int i_x, int i_y, double red, double green, double blue) {
-    m_rChannel.at(i_x).at(i_y) = red;
-    m_gChannel.at(i_x).at(i_y) = green;
-    m_bChannel.at(i_x).at(i_y) = blue;
+void Image::SetPixel(int i_x, int i_y, Uint8 red, Uint8 green, Uint8 blue) {
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    mPixelBuffer.at(i_y * m_width + i_x) = (red << 24) | (green << 16) | (blue << 8) | 255;
+#else
+    mPixelBuffer.at(i_y * m_width + i_x) = (255 << 24) | (red << 16) | (green << 8) | blue;
+#endif
+
 }
 
 void Image::Display() {
-    Uint32* pixels = mPixelBuffer.data(); 
-
-    for (int y = 0; y < m_height; y++) {
-        Uint32* row = &pixels[y * m_width];
-        for (int x = 0; x < m_width; x++) {
-            row[x] = ConvertColor(m_rChannel[x][y], m_gChannel[x][y], m_bChannel[x][y]);
-        }
-    }
-
-    SDL_UpdateTexture(m_texture, nullptr, pixels, m_width * sizeof(Uint32));
+    SDL_UpdateTexture(m_texture, nullptr, mPixelBuffer.data(), m_width * sizeof(Uint32));
 
     SDL_Rect bounds = {0, 0, static_cast<int>(m_width), static_cast<int>(m_height)};
     SDL_RenderCopy(m_renderer, m_texture, nullptr, &bounds);
-}
-
-Uint32 Image::ConvertColor(double red, double green, double blue) {
-
-    uint8_t r = static_cast<uint8_t>(red);
-    uint8_t g = static_cast<uint8_t>(green);
-    uint8_t b = static_cast<uint8_t>(blue);
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    return (r << 24) | (g << 16) | (b << 8) | 255;
-#else
-    return (255 << 24) | (r << 16) | (g << 8) | b;
-#endif
 }
 
 void Image::InitTexture() {

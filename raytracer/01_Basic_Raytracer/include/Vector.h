@@ -126,6 +126,8 @@ public:
 	}
 };
 
+using ColorVec = Vector<uint8_t, 3>;
+
 using vec2d = Vector<double, 2>;
 using vec3d = Vector<double, 3>;
 using vec4d = Vector<double, 4>;

@@ -3,7 +3,7 @@
 
 namespace rt {
 
-Sphere::Sphere(math::vec3d i_center, double i_radius, math::vec3d i_color) 
+Sphere::Sphere(math::vec3d i_center, double i_radius, math::ColorVec i_color) 
     : m_center(i_center)
     , m_radius(i_radius)
     , m_color(i_color)
@@ -46,7 +46,7 @@ math::vec3d Sphere::GetNormal(math::vec3d i_point) const
 }
 
 
-math::vec3d Sphere::GetMaterial() const {
+math::ColorVec Sphere::GetMaterial() const {
     return m_color;
 }
 } //namespace rt
